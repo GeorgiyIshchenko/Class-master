@@ -15,6 +15,8 @@ urlpatterns = [
 	path('classes/create', class_create),
 	path('classes/leave', class_leave),
 	path('classes/<str:name>-<int:pk>/feed', class_view, name='classcontent_url'),
+	path('classes/<str:name>-<int:pk>/tasks', class_tasks),
+	path('classes/<str:name>-<int:pk>/task=<int:pin>', class_task),
 	path('classes/<str:name>-<int:pk>/students', class_students),
 	path('classes/<str:name>-<int:pk>/task_add', TaskView.as_view()),
 ]

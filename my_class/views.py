@@ -13,6 +13,8 @@ from django.views.generic.edit import FormView
 from .forms import *
 from .models import *
 
+def decode(pin):
+	return int(pin)^612345
 
 @login_required
 def homepage(request):
@@ -33,6 +35,7 @@ def sign_up(request):
 			profile_user.save()
 			profile = profile_form.save(commit=False)
 			profile.user = profile_user
+			profile.last_visit = timezone.now()
 			profile.save()
 			return redirect('/accounts/sign_in')
 	else:
@@ -95,6 +98,27 @@ def class_view(request,name,pk):
 
 
 @login_required
+def class_tasks(request,name,pk):
+	current_class = Class.objects.get(pk=pk)
+	tasks = Task.objects.filter(current_class = current_class).order_by('published_date').reverse()
+	return render(request,'class_tasks.html',
+		{
+		'class':current_class,
+		'tasks':tasks,
+		})
+
+@login_required
+def class_task(request,name,pk,pin):
+	current_class = Class.objects.get(pk=pk)
+	task = Task.objects.get(pk = decode(pin))
+	return render(request,'class_task.html',
+		{
+		'class':current_class,
+		'task':task,
+		})
+
+
+@login_required
 def class_students(request,name,pk):
 	current_class = get_object_or_404(Class, pk=pk)
 	#Костыль для отображения в алфавитном порядке
@@ -110,8 +134,7 @@ def class_students(request,name,pk):
 		})
 
 
-def decode(pin):
-	return int(pin)^612345
+
 
 
 @login_required
@@ -163,8 +186,8 @@ class TaskView(FormView):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         print(request.body)
-        files = request.FILES.get('files')
-        images = request.FILES.get('images')
+        files = request.FILES.getlist('files')
+        images = request.FILES.getlist('images')
         print(images)
         if form.is_valid():
             task = form.save(commit=False)

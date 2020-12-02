@@ -8,6 +8,8 @@ from ckeditor_uploader.fields import RichTextUploadingField
 from django.urls import reverse
 from PIL import Image
 
+def generate_pin(n):
+        return (n^612345)
 
 def generate_teacher_filename(instance,filename):
         filename = instance.author.first_name+instance.author.last_name+"_на_"+str(instance.date)+filename
@@ -37,6 +39,9 @@ class Task(models.Model):
     def get_absolute_url(self): 
         return reverse('taskcontent_url',kwargs={'pk':self.pk})
 
+
+    def pin(self):
+        return generate_pin(self.pk)
 
     class Meta:
         verbose_name = "Задания"
@@ -72,7 +77,7 @@ class Class(models.Model):
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
 
     def pin(self):
-        return (self.pk^612345)
+        return generate_pin(self.pk)
 
     def __str__(self):
         return self.name+"-"+str(self.pk^612345)
