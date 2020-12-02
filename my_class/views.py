@@ -13,12 +13,15 @@ from django.views.generic.edit import FormView
 from .forms import *
 from .models import *
 
+
 def decode(pin):
 	return int(pin)^612345
 
+
 @login_required
 def homepage(request):
-	return render(request,'homepage.html')
+	return render(request, 'homepage.html')
+
 
 def sign_up(request):
 	if request.method == 'POST':
@@ -26,7 +29,8 @@ def sign_up(request):
 		profile_form = ProfileForm(request.POST)
 		password_form = PasswordForm(request.POST)
 		if user_form.is_valid() and profile_form.is_valid() and password_form.is_valid():
-			profile_user = User.objects.create_user(username = user_form.cleaned_data['email'],
+			profile_user = User.objects.create_user(
+				username=user_form.cleaned_data['email'],
 				email=user_form.cleaned_data['email'],
 				first_name=user_form.cleaned_data['first_name'],
 				last_name=user_form.cleaned_data['last_name'],
@@ -43,33 +47,36 @@ def sign_up(request):
 		password_form = PasswordForm()
 		profile_form = ProfileForm()
 	return render(request,'sign_up.html',{
-		'user_form' : user_form,
-		'password_form' : password_form,
-		'profile_form' : profile_form
+		'user_form': user_form,
+		'password_form': password_form,
+		'profile_form': profile_form
 		})
 
+
 def sign_in(request):
-	if request.method=="POST":
+	if request.method == "POST":
 		sign_in_form = SignInForm(request.POST)
 		if sign_in_form.is_valid():
 			email = sign_in_form.cleaned_data.get('email')
 			password = sign_in_form.cleaned_data.get('password')
-			user = auth.authenticate(username = email, password=password)
+			user = auth.authenticate(username=email, password=password)
 			if user is not None and user.is_active:
 				auth.login(request, user)
 				return redirect('/')
 	else:
 		sign_in_form = SignInForm()
 	return render(request,'sign_in.html',{
-		'sign_in_form':sign_in_form,
+		'sign_in_form': sign_in_form,
 		})
+
 
 @login_required
 def profile(request):
-	profile = Profile.objects.get(user = request.user)
+	profile = Profile.objects.get(user=request.user)
 	return render(request, 'profile.html', {
-		'profile' : profile
+		'profile': profile
 		})
+
 
 @login_required
 def edit_profile(request):
@@ -83,39 +90,42 @@ def edit_profile(request):
 	else:
 		user_form = UserForm(instance=request.user)
 		profile_form = ProfileForm(instance=request.user.profile)
-	return render(request,'profile_edit.html',{
-		'user_form' : user_form,
-		'profile_form' : profile_form
+	return render(request, 'profile_edit.html', {
+		'user_form': user_form,
+		'profile_form': profile_form
 		})
 
+
 @login_required
-def class_view(request,name,pk):
+def class_view(request, name, pk):
 	current_class = Class.objects.get(pk=pk)
-	return render(request,'class_view.html',
-		{
-		'class':current_class,
+	return render(request,'class_view.html', {
+		'class': current_class,
 		})
 
 
 @login_required
-def class_tasks(request,name,pk):
+def class_tasks(request, name, pk):
 	current_class = Class.objects.get(pk=pk)
 	tasks = Task.objects.filter(current_class = current_class).order_by('published_date').reverse()
-	return render(request,'class_tasks.html',
-		{
-		'class':current_class,
-		'tasks':tasks,
+	return render(request,'class_tasks.html', {
+		'class': current_class,
+		'tasks': tasks,
 		})
 
 @login_required
-def class_task(request,name,pk,pin):
+def class_task_view(request,name,pk,pin):
 	current_class = Class.objects.get(pk=pk)
-	task = Task.objects.get(pk = decode(pin))
-	return render(request,'class_task.html',
-		{
-		'class':current_class,
-		'task':task,
-		})
+	task = Task.objects.get(pk=decode(pin))
+	files = Files.objects.filter(task=task)
+	images = Images.objects.filter(task=task)
+
+	return render(request, 'class_task_view.html', {
+		'class': current_class,
+		'task': task,
+		'files': files,
+		'images': images,
+	})
 
 
 @login_required
@@ -127,19 +137,15 @@ def class_students(request,name,pk):
 	for i in users:
 		if current_class in i.profile.classes.all():
 			students.append(i)
-	return render(request,'class_students.html',
-		{
+	return render(request,'class_students.html', {
 		'class': current_class,
-		'students':students,
-		})
-
-
-
+		'students': students,
+	})
 
 
 @login_required
 def class_join(request):
-	if request.method=="POST":
+	if request.method == "POST":
 		class_join_form = ClassJoin(request.POST)
 		if class_join_form.is_valid():
 			pin = class_join_form.cleaned_data['pin']
@@ -151,14 +157,14 @@ def class_join(request):
 				print("Неверный pin")
 	else:
 		class_join_form = ClassJoin()
-	return render(request,'class_join.html',{
-		'class_join_form':class_join_form,
-		})
+	return render(request, 'class_join.html', {
+		'class_join_form': class_join_form,
+	})
 
 
 @login_required
 def class_create(request):
-	if request.method=="POST":
+	if request.method == "POST":
 		class_create_form = ClassCreate(request.POST)
 		if class_create_form.is_valid():
 			current_class = class_create_form.save(commit=False)
@@ -168,9 +174,9 @@ def class_create(request):
 			return redirect('/im')
 	else:
 		class_create_form = ClassCreate()
-	return render(request,'class_create.html',{
-		'class_create_form':class_create_form,
-		})
+	return render(request, 'class_create.html', {
+		'class_create_form': class_create_form,
+	})
 
 @login_required
 def class_leave(request):
@@ -178,31 +184,30 @@ def class_leave(request):
 
 
 class TaskView(FormView):
-    form_class = TaskAdd
-    template_name = 'task_add.html'
-    success_url = '/im' 
+	form_class = TaskAdd
+	template_name = 'class_task_add.html'
+	success_url = '/'
 
-    def post(self, request, *args, **kwargs):
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        print(request.body)
-        files = request.FILES.getlist('files')
-        images = request.FILES.getlist('images')
-        print(images)
-        if form.is_valid():
-            task = form.save(commit=False)
-            task.current_class = get_object_or_404(Class, pk=kwargs['pk'])
-            task.author = task.current_class.teacher
-            task.save()
-            for f in files:
-                print(d)
-                fl = Files(task=task, file = f)
-                fl.save()
-            for i in images:
-                print(i)
-                im = Images(task=task, image = i)
-                im.save()
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
+	def post(self, request, *args, **kwargs):
+		form_class = self.get_form_class()
+		form = self.get_form(form_class)
+		files = request.FILES.getlist('files')
+		images = request.FILES.getlist('images')
+		print(images)
+		if form.is_valid():
+			task = form.save(commit=False)
+			task.current_class = get_object_or_404(Class, pk=kwargs['pk'])
+			task.author = task.current_class.teacher
+			task.save()
+			for f in files:
+				print(f)
+				fl = Files(task=task, file=f)
+				fl.save()
+			for i in images:
+				print(i)
+				im = Images(task=task, image=i)
+				im.save()
+			return redirect('/classes/'+kwargs['name']+'-'+str(kwargs['pk'])+'/tasks')
+		else:
+			return self.form_invalid(form)
 
