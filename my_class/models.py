@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from ckeditor_uploader.fields import RichTextUploadingField
-from django.urls import reverse
+from django.shortcuts import reverse
 from PIL import Image
 
 
@@ -31,7 +31,7 @@ class Task(models.Model):
         return self.title + " | "+str(self.pk)
 
     def get_absolute_url(self): 
-        return reverse('taskcontent_url', kwargs={'pk': self.pk})
+        return reverse('task-content', kwargs={'pk': self.pk})
 
     def pin(self):
         return generate_pin(self.pk)
@@ -46,15 +46,27 @@ class Task(models.Model):
         verbose_name = "Задания"
         verbose_name_plural = "Задания"
 
+
 class StudentAnswer(models.Model):
-    comment = models.CharField(max_length=256)
+    comment = models.TextField(max_length=256)
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    author = models.ForeignKey('Profile', on_delete=models.CASCADE, blank=True, null=True)
+    mark = models.IntegerField(blank=True, null=True)
+    teacher_comment = models.TextField(max_length=256, blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Ответы"
+        verbose_name_plural = "Ответы"
+
+    def __str__(self):
+        return self.author.user.last_name+'_'+self.comment
 
 
 class Files(models.Model):
     file = models.FileField(upload_to=generate_teacher_filename, blank=True, null=True, verbose_name='Файл')
     task = models.ForeignKey(Task, blank=True, null=True, on_delete=models.CASCADE)
     student_answer = models.ForeignKey(StudentAnswer, blank=True, null=True, on_delete=models.CASCADE)
+    is_student_file = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Файлы"
@@ -70,6 +82,8 @@ class Files(models.Model):
 class Images(models.Model):
     image = models.ImageField(upload_to=generate_teacher_filename, blank=True, null=True, verbose_name='Изображение')
     task = models.ForeignKey(Task, blank=True, null=True, on_delete=models.CASCADE)
+    student_answer = models.ForeignKey(StudentAnswer, blank=True, null=True, on_delete=models.CASCADE)
+    is_student_file = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Изображения"
@@ -77,8 +91,6 @@ class Images(models.Model):
 
     def __str__(self):
         return self.image.name
-
-
 
 
 class Class(models.Model):
@@ -96,13 +108,7 @@ class Class(models.Model):
         verbose_name_plural = "Классы"
 
     def get_absolute_url(self):
-        return reverse('classcontent_url', kwargs={'name':self.name,'pk':self.pk})
-
-    def is_teacher(self):
-        if self.teacher:
-            return True
-        else:
-            return False
+        return reverse('qq', kwargs={'name': self.name, 'pk': self.pk})
 
 
 class Profile(models.Model):
@@ -115,6 +121,12 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username+"_profile"+str(self.pk)
+
+    def is_teacher(self):
+        if len(Class.objects.filter(teacher=self.user)) > 0:
+            return True
+        else:
+            return False
 
     class Meta:
         verbose_name = "Профили"

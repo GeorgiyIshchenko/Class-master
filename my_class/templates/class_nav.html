@@ -1,0 +1,16 @@
+<div style="background-color: #95D2F1;">
+    <nav class="container navbar navbar-expand-lg navbar-light">
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav">
+              <a class="nav-link" href="">Лента</a>
+              <a class="nav-link" href="tasks">Задания</a>
+              <a class="nav-link" href="chat">Чат</a>
+              <a class="nav-link" href="students">Ученики</a>
+              {% if request.user.profile.is_teacher %}
+              <a class="nav-link" href="task_add">Добавить задание</a>
+              {% endif %}
+              <a class="nav-link" href="leave">Покинуть курс</a>
+          </div>
+        </div>
+    </nav>
+</div>

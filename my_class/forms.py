@@ -75,7 +75,22 @@ class TaskAdd(forms.ModelForm):
 		label='Выберите изображение для загрузки',
 		widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
 
-
 	class Meta:
 		model = Task
 		fields = ('title', 'body', 'date', 'max_mark')
+
+
+class StudentAnswerForm(forms.ModelForm):
+	comment = forms.CharField(
+		label='',
+		widget=forms.TextInput(attrs={'placeholder': 'Комментарий к заданию'}), required=False)
+	files = forms.FileField(
+		label='Выберите файл для загрузки',
+		widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
+	images = forms.ImageField(
+		label='Выберите изображение для загрузки',
+		widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
+
+	class Meta:
+		model = StudentAnswer
+		fields = ('comment', )

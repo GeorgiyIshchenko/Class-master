@@ -15,7 +15,7 @@ from .models import *
 
 
 def decode(pin):
-	return int(pin)^612345
+	return int(pin) ^ 612345
 
 
 @login_required
@@ -99,7 +99,7 @@ def edit_profile(request):
 @login_required
 def class_view(request, name, pk):
 	current_class = Class.objects.get(pk=pk)
-	return render(request,'class_view.html', {
+	return render(request, 'class_view.html', {
 		'class': current_class,
 		})
 
@@ -107,29 +107,93 @@ def class_view(request, name, pk):
 @login_required
 def class_tasks(request, name, pk):
 	current_class = Class.objects.get(pk=pk)
-	tasks = Task.objects.filter(current_class = current_class).order_by('published_date').reverse()
-	return render(request,'class_tasks.html', {
+	tasks = Task.objects.filter(current_class=current_class).order_by('-published_date')
+	return render(request, 'class_tasks.html', {
 		'class': current_class,
 		'tasks': tasks,
 		})
 
-@login_required
-def class_task_view(request,name,pk,pin):
-	current_class = Class.objects.get(pk=pk)
-	task = Task.objects.get(pk=decode(pin))
-	files = Files.objects.filter(task=task)
-	images = Images.objects.filter(task=task)
-
-	return render(request, 'class_task_view.html', {
-		'class': current_class,
-		'task': task,
-		'files': files,
-		'images': images,
-	})
-
 
 @login_required
-def class_students(request,name,pk):
+def class_task_view(request, name, pk, pin):
+	if request.method == "POST":
+		form = StudentAnswerForm(request.POST, request.FILES)
+		if form.is_valid():
+			answer = form.save(commit=False)
+			task = get_object_or_404(Task, pk=decode(pin))
+			answer.task = task
+			answer.author = request.user.profile
+			answer.save()
+			for f in request.FILES.getlist('files'):
+				f1 = Files(task=task, file=f, student_answer=answer, is_student_file=True)
+				f1.save()
+			for i in request.FILES.getlist('images'):
+				i1 = Images(task=task, image=i, student_answer=answer, is_student_file=True)
+				i1.save()
+			return redirect('/classes/'+name+'-'+str(pk)+'/task='+str(pin))
+	else:
+		current_class = Class.objects.get(pk=pk)
+		task = Task.objects.get(pk=decode(pin))
+		files = Files.objects.filter(task=task, is_student_file=False)
+		images = Images.objects.filter(task=task, is_student_file=False)
+		form = StudentAnswerForm()
+		if request.user == current_class.teacher:
+			is_teacher = True
+		else:
+			is_teacher = False
+		return render(request, 'class_task_view.html', {
+			'class': current_class,
+			'task': task,
+			'files': files,
+			'images': images,
+			'form': form,
+			'is_teacher': is_teacher,
+		})
+
+
+class TaskView(FormView):
+	form_class = TaskAdd
+	template_name = 'class_task_add.html'
+	success_url = '/'
+
+	def post(self, request, *args, **kwargs):
+		form_class = self.get_form_class()
+		form = self.get_form(form_class)
+		files = request.FILES.getlist('files')
+		images = request.FILES.getlist('images')
+		if form.is_valid():
+			task = form.save(commit=False)
+			task.current_class = get_object_or_404(Class, pk=kwargs['pk'])
+			task.author = task.current_class.teacher
+			task.save()
+			for f in files:
+				fl = Files(task=task, file=f)
+				fl.save()
+			for i in images:
+				im = Images(task=task, image=i)
+				im.save()
+			return redirect('/classes/'+kwargs['name']+'-'+str(kwargs['pk'])+'/tasks')
+		else:
+			return self.form_invalid(form)
+
+
+@login_required
+def class_task_edit(request, name, pk, pin):
+	if request.method == 'POST':
+		pass
+	else:
+		task = Task.objects.get(pk=decode(pin))
+		files = Files.objects.filter(task=task)
+		images = Images.objects.filter(task=task)
+		form = TaskAdd(instance=task)
+		return render(request, 'class_task_add.html', {
+			'form': form,
+			'edit': True,
+		})
+
+
+@login_required
+def class_students(request, name, pk):
 	current_class = get_object_or_404(Class, pk=pk)
 	#Костыль для отображения в алфавитном порядке
 	users = User.objects.all().order_by('last_name')
@@ -163,6 +227,12 @@ def class_join(request):
 
 
 @login_required
+def class_leave(request, name, pk):
+	request.user.profile.classes.remove(get_object_or_404(Class, pk=pk))
+	return redirect('/im')
+
+
+@login_required
 def class_create(request):
 	if request.method == "POST":
 		class_create_form = ClassCreate(request.POST)
@@ -177,37 +247,3 @@ def class_create(request):
 	return render(request, 'class_create.html', {
 		'class_create_form': class_create_form,
 	})
-
-@login_required
-def class_leave(request):
-	pass
-
-
-class TaskView(FormView):
-	form_class = TaskAdd
-	template_name = 'class_task_add.html'
-	success_url = '/'
-
-	def post(self, request, *args, **kwargs):
-		form_class = self.get_form_class()
-		form = self.get_form(form_class)
-		files = request.FILES.getlist('files')
-		images = request.FILES.getlist('images')
-		print(images)
-		if form.is_valid():
-			task = form.save(commit=False)
-			task.current_class = get_object_or_404(Class, pk=kwargs['pk'])
-			task.author = task.current_class.teacher
-			task.save()
-			for f in files:
-				print(f)
-				fl = Files(task=task, file=f)
-				fl.save()
-			for i in images:
-				print(i)
-				im = Images(task=task, image=i)
-				im.save()
-			return redirect('/classes/'+kwargs['name']+'-'+str(kwargs['pk'])+'/tasks')
-		else:
-			return self.form_invalid(form)
-

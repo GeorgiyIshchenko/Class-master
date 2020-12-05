@@ -1,42 +1,31 @@
 
 {% extends "base.html" %}
   {% block content%}
-
   <body>
-  	<div style="background-color: #95D2F1;">
-	    <nav class="container navbar navbar-expand-lg navbar-light">
-	        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-	          <div class="navbar-nav">
-	            <a class="nav-link" href="feed">Лента</a>
-	            <a class="nav-link" href="tasks">Задания</a>
-	            <a class="nav-link" href="chat">Чат</a>
-	            <a class="nav-link" href="students">Ученики</a>
-	            {% if class.is_teacher %}
-	            <a class="nav-link" href="task_add">Добавить задание</a>
-	            {% endif %}
-	          </div>
-	        </div>
-	    </nav>
-	</div>
+  {% include 'class_nav.html' %}
     	<div class="container mt-3 mb-5">
         <form class="" method="POST" action="" enctype="multipart/form-data">
           {% csrf_token %}
           {% load crispy_forms_tags %}
           <h1 class="h3 mb-3 font-weight-normal">Создание нового задания</h1>
           {{ form.title | as_crispy_field }}
-          {% autoescape off %} 
+          {% autoescape off %}
           {{ content.text }}
           {{ form.body }}
           {% endautoescape %}
           {{ form.max_mark | as_crispy_field }}
           <label>Укажите дату сдачи</label>
-          <input id ="inputDate" type="date" name="date" placeholder="Дата сдачи" class="form-control"><br>
+          <input id ="inputDate" type="date" name="date" placeholder="Дата сдачи" class="form-control" value="{{ form.date | date:'d.m.y' }}"><br>
           {{ form.images }}
           {{ form.files }}
-          
-
+          <br><br>
+          {% if edit %}
+          <button class="btn btn-lg border-bottom" type="submit"
+          style="background-color: #95D2F1;">Редактировать</button>
+          {% else%}
           <button class="btn btn-lg border-bottom" type="submit"
           style="background-color: #95D2F1;">Сохранить</button>
+          {% endif %}
         </form>
       </div>
   </body>
