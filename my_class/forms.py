@@ -4,6 +4,7 @@ from ckeditor.widgets import CKEditorWidget
 from django import forms
 from .models import *
 
+
 class UserForm(forms.ModelForm):
 	first_name = forms.CharField(label='Введите имя', widget=forms.TextInput(attrs={'placeholder': 'Имя'}))
 	last_name = forms.CharField(label='Введите фамилию', widget=forms.TextInput(attrs={'placeholder': 'Фамилия'}))
@@ -68,16 +69,19 @@ class TaskAdd(forms.ModelForm):
 	max_mark = forms.IntegerField(
 		label='Введите максимальную оценку',
 		widget=forms.NumberInput(attrs={'placeholder': 'Максимальная оценка'}))
+
+	class Meta:
+		model = Task
+		fields = ('title', 'body', 'date', 'max_mark')
+
+
+class TaskAddFiles(forms.Form):
 	files = forms.FileField(
 		label='Выберите файл для загрузки',
 		widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
 	images = forms.ImageField(
 		label='Выберите изображение для загрузки',
 		widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
-
-	class Meta:
-		model = Task
-		fields = ('title', 'body', 'date', 'max_mark')
 
 
 class StudentAnswerForm(forms.ModelForm):

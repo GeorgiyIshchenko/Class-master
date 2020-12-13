@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include 'class_nav.html' %}
+<div class="container mt-5">
+    <h1>Ученики, сдавшие работу:</h1>
+    <table class="table table-hover mt-5">
+          <thead>
+            <tr>
+                <th scope="col">Фамилия</th>
+                <th scope="col">Имя</th>
+                <th scope="col">Оценка</th>
+                <th scope="col">Комментарий</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for answer in answers %}
+            <tr>
+                <td>{{answer.author.user.last_name}}</td>
+                <td>{{answer.author.user.first_name}}</td>
+                <td>{{answer.mark}}</td>
+                <td>{{answer.teacher_comment}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+</div>
+
+
+{% endblock %}

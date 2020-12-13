@@ -8,17 +8,30 @@
     <p class="lead">{{class.teacher.first_name}} {{class.teacher.last_name}}</p>
   </div>
 </div>
-<div class="container mt-5 mb-5">
-           {% for task in tasks %}
-           <div class="card">
-            <h5 class="card-header">{{task.published_date | date:'d.m.y'}}</h5>
-            <div class="card-body">
-              <h5 class="card-title">{{task.title}}</h5>
-              <p class="card-text">Дата сдачи: {{task.date | date:'d.m.y'}}</p>
-              <a href="task={{task.pin}}/" class="btn btn-lg border-bottom" style="background-color: #95D2F1;">Подробнее</a>
-            </div>
-          </div>
-          <br>
+<div class="album mt-5">
+    <div class="container">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 g-3">
+            {% for task in tasks %}
+                <div class="col">
+                    <div class="card mt-2 shadow" >
+                      <div class="row g-0" style="height: 210px;">
+                        <div class="col-md-3" style="background: -webkit-linear-gradient(45deg, rgb(175, 213, 236), rgb(202, 198, 245), rgb(66, 123, 166));
+                                                    background: -moz-linear-gradient(45deg, rgb(175, 213, 236), rgb(202, 198, 245), rgb(66, 123, 166));
+                                                    background: linear-gradient(45deg, rgb(175, 213, 236), rgb(202, 198, 245), rgb(66, 123, 166));">
+                        </div>
+                        <div class="col-md-8">
+                          <div class="card-body">
+                            <h5 class="card-title">{{task.title}}</h5>
+                            <p class="card-text">Дата сдачи: {{task.date | date:'d.m.y'}}</p>
+                            <p class="card-text"><small class="text-muted">{{task.published_date | date:'d.m.y'}}</small></p>
+                              <a href="{{task.get_absolute_url}}" class="btn btn-lg border-bottom" style="background-color: #95D2F1;">Подробнее</a>
+                          </div>
+                        </div>
+                      </div>
+                </div>
+                </div>
            {% endfor %}
+        </div>
+    </div>
 </div>
 {% endblock %}

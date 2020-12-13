@@ -2,14 +2,14 @@
     <nav class="container navbar navbar-expand-lg navbar-light">
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div class="navbar-nav">
-              <a class="nav-link" href="">Лента</a>
-              <a class="nav-link" href="tasks">Задания</a>
+              <a class="nav-link" href="{{class.get_absolute_url_feed}}">Лента</a>
+              <a class="nav-link" href="{{class.get_absolute_url_tasks}}">Задания</a>
               <a class="nav-link" href="chat">Чат</a>
-              <a class="nav-link" href="students">Ученики</a>
+              <a class="nav-link" href="{{class.get_absolute_url_students}}">Ученики</a>
               {% if request.user.profile.is_teacher %}
-              <a class="nav-link" href="task_add">Добавить задание</a>
+              <a class="nav-link" href="{{class.get_absolute_url_task_add}}">Добавить задание</a>
               {% endif %}
-              <a class="nav-link" href="leave">Покинуть курс</a>
+              <a class="nav-link" href="{{class.get_absolute_url_leave}}">Покинуть курс</a>
           </div>
         </div>
     </nav>

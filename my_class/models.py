@@ -25,13 +25,11 @@ class Task(models.Model):
     current_class = models.ForeignKey('Class', on_delete=models.CASCADE, null=True, blank=True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
     published_date = models.DateTimeField(auto_now_add=True)
+    edit_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     max_mark = models.IntegerField(default=5)
 
     def __str__(self): 
         return self.title + " | "+str(self.pk)
-
-    def get_absolute_url(self): 
-        return reverse('task-content', kwargs={'pk': self.pk})
 
     def pin(self):
         return generate_pin(self.pk)
@@ -45,6 +43,22 @@ class Task(models.Model):
     class Meta:
         verbose_name = "Задания"
         verbose_name_plural = "Задания"
+
+    def get_absolute_url(self):
+        return reverse('task-view', kwargs={'name': self.current_class.name, 'pk': self.current_class.pk,
+                                            'pin': generate_pin(self.pk)})
+
+    def get_absolute_url_edit(self):
+        return reverse('task-edit', kwargs={'name': self.current_class.name, 'pk': self.current_class.pk,
+                                            'pin': generate_pin(self.pk)})
+
+    def get_absolute_url_delete(self):
+        return reverse('task-delete', kwargs={'name': self.current_class.name, 'pk': self.current_class.pk,
+                                              'pin': generate_pin(self.pk)})
+
+    def get_absolute_url_answers(self):
+        return reverse('task-answers', kwargs={'name': self.current_class.name, 'pk': self.current_class.pk,
+                                              'pin': generate_pin(self.pk)})
 
 
 class StudentAnswer(models.Model):
@@ -73,7 +87,7 @@ class Files(models.Model):
         verbose_name_plural = "Файлы"
 
     def get_name(self):
-        return self.file.name.split('/')[2]
+        return self.file.name.split('/')[1]
 
     def __str__(self):
         return self.file.name
@@ -108,7 +122,22 @@ class Class(models.Model):
         verbose_name_plural = "Классы"
 
     def get_absolute_url(self):
-        return reverse('qq', kwargs={'name': self.name, 'pk': self.pk})
+        return reverse('class-view', kwargs={'name': self.name, 'pk': self.pk})
+
+    def get_absolute_url_feed(self):
+        return reverse('feed', kwargs={'name': self.name, 'pk': self.pk})
+
+    def get_absolute_url_tasks(self):
+        return reverse('tasks', kwargs={'name': self.name, 'pk': self.pk})
+
+    def get_absolute_url_task_add(self):
+        return reverse('task-add', kwargs={'name': self.name, 'pk': self.pk})
+
+    def get_absolute_url_students(self):
+        return reverse('students', kwargs={'name': self.name, 'pk': self.pk})
+
+    def get_absolute_url_leave(self):
+        return reverse('leave', kwargs={'name': self.name, 'pk': self.pk})
 
 
 class Profile(models.Model):
@@ -146,8 +175,8 @@ def save_user_profile(sender, instance, **kwargs):
 
 class ProfileClass(models.Model):
     date_join = models.DateTimeField(auto_now_add=True) 
-    current_class = models.ForeignKey(Class,on_delete=models.CASCADE)
-    profile = models.ForeignKey(Profile,on_delete=models.CASCADE)
+    current_class = models.ForeignKey(Class, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.profile.user.username+'_has_joined_'+self.current_class.name

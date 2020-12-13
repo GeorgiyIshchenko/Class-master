@@ -65,14 +65,14 @@ def sign_in(request):
 				return redirect('/')
 	else:
 		sign_in_form = SignInForm()
-	return render(request,'sign_in.html',{
+	return render(request, 'sign_in.html', {
 		'sign_in_form': sign_in_form,
 		})
 
 
 @login_required
 def profile(request):
-	profile = Profile.objects.get(user=request.user)
+	profile = get_object_or_404(Profile, user=request.user)
 	return render(request, 'profile.html', {
 		'profile': profile
 		})
@@ -98,15 +98,19 @@ def edit_profile(request):
 
 @login_required
 def class_view(request, name, pk):
-	current_class = Class.objects.get(pk=pk)
+	current_class = get_object_or_404(Class, pk=pk)
+	is_teacher = False
+	if current_class.teacher == request.user:
+		is_teacher = True
 	return render(request, 'class_view.html', {
 		'class': current_class,
+		'is_teacher': is_teacher,
 		})
 
 
 @login_required
 def class_tasks(request, name, pk):
-	current_class = Class.objects.get(pk=pk)
+	current_class = get_object_or_404(Class, pk=pk)
 	tasks = Task.objects.filter(current_class=current_class).order_by('-published_date')
 	return render(request, 'class_tasks.html', {
 		'class': current_class,
@@ -132,8 +136,8 @@ def class_task_view(request, name, pk, pin):
 				i1.save()
 			return redirect('/classes/'+name+'-'+str(pk)+'/task='+str(pin))
 	else:
-		current_class = Class.objects.get(pk=pk)
-		task = Task.objects.get(pk=decode(pin))
+		current_class = get_object_or_404(Class, pk=pk)
+		task = get_object_or_404(Task, pk=decode(pin))
 		files = Files.objects.filter(task=task, is_student_file=False)
 		images = Images.objects.filter(task=task, is_student_file=False)
 		form = StudentAnswerForm()
@@ -151,45 +155,80 @@ def class_task_view(request, name, pk, pin):
 		})
 
 
-class TaskView(FormView):
-	form_class = TaskAdd
-	template_name = 'class_task_add.html'
-	success_url = '/'
-
-	def post(self, request, *args, **kwargs):
-		form_class = self.get_form_class()
-		form = self.get_form(form_class)
-		files = request.FILES.getlist('files')
-		images = request.FILES.getlist('images')
+@login_required()
+def class_task_add(request, name, pk):
+	current_class = get_object_or_404(Class, pk=pk)
+	if request.method == 'POST':
+		form = TaskAdd(request.POST)
 		if form.is_valid():
+			#сохраняю задание
 			task = form.save(commit=False)
-			task.current_class = get_object_or_404(Class, pk=kwargs['pk'])
+			task.current_class = get_object_or_404(Class, pk=pk)
 			task.author = task.current_class.teacher
 			task.save()
+			#сохраняю материалы задания
+			files = request.FILES.getlist('files')
+			images = request.FILES.getlist('images')
 			for f in files:
 				fl = Files(task=task, file=f)
 				fl.save()
 			for i in images:
 				im = Images(task=task, image=i)
 				im.save()
-			return redirect('/classes/'+kwargs['name']+'-'+str(kwargs['pk'])+'/tasks')
-		else:
-			return self.form_invalid(form)
+			print(current_class.get_absolute_url_tasks)
+			return redirect(current_class.get_absolute_url_tasks())
+	else:
+		form = TaskAdd()
+		file_form = TaskAddFiles()
+		return render(request, 'class_task_add.html', {
+			'class': current_class,
+			'form': form,
+			'file_form': file_form,
+		})
+
+
+@login_required()
+def class_task_delete(request, name, pk, pin):
+	current_class = get_object_or_404(Class, pk=pk)
+	task = get_object_or_404(Task, pk=decode(pin))
+	task.delete()
+	return redirect(current_class.get_absolute_url_tasks())
 
 
 @login_required
 def class_task_edit(request, name, pk, pin):
+	task = get_object_or_404(Task, pk=decode(pin))
 	if request.method == 'POST':
-		pass
+		form = TaskAdd(request.POST, instance=task)
+		print(form.cleaned_data)
+		if form.is_valid():
+			edited_task = form.save(commit=False)
+			edited_task.current_class = get_object_or_404(Class, pk=pk)
+			edited_task.author = task.current_class.teacher
+			edited_task.save()
+			return redirect(task.get_absolute_url())
 	else:
-		task = Task.objects.get(pk=decode(pin))
+		current_class = get_object_or_404(Task, pk=pk)
 		files = Files.objects.filter(task=task)
 		images = Images.objects.filter(task=task)
 		form = TaskAdd(instance=task)
-		return render(request, 'class_task_add.html', {
+		return render(request, 'class_task_edit.html', {
+			'class': current_class,
 			'form': form,
-			'edit': True,
 		})
+
+
+@login_required
+def class_task_answers(request, name, pk, pin):
+	current_class = get_object_or_404(Class, pk=pk)
+	task = get_object_or_404(Task, pk=decode(pin))
+	print(task)
+	answers = StudentAnswer.objects.filter(task=task)
+	print(answers)
+	return render(request, 'class_task_answers.html', {
+		'class': current_class,
+		'answers': answers,
+	})
 
 
 @login_required
@@ -201,7 +240,7 @@ def class_students(request, name, pk):
 	for i in users:
 		if current_class in i.profile.classes.all():
 			students.append(i)
-	return render(request,'class_students.html', {
+	return render(request, 'class_students.html', {
 		'class': current_class,
 		'students': students,
 	})
@@ -214,7 +253,7 @@ def class_join(request):
 		if class_join_form.is_valid():
 			pin = class_join_form.cleaned_data['pin']
 			try:
-				current_class = Class.objects.get(pk=decode(pin))
+				current_class = get_object_or_404(Class, pk=decode(pin))
 				request.user.profile.classes.add(current_class)
 				return redirect('/im')
 			except Class.DoesNotExist:

@@ -3,11 +3,11 @@
   {% block content%}
   <body>
   {% include 'class_nav.html' %}
-    	<div class="container mt-3 mb-5">
+    	<div class="container mt-2 mb-5">
         <form class="" method="POST" action="" enctype="multipart/form-data">
           {% csrf_token %}
           {% load crispy_forms_tags %}
-          <h1 class="h3 mb-3 font-weight-normal">Создание нового задания</h1>
+          <h1 class="h3 mb-3 font-weight-normal">Редактировать задание</h1>
           {{ form.title | as_crispy_field }}
           {% autoescape off %}
           {{ content.text }}
@@ -16,11 +16,11 @@
           {{ form.max_mark | as_crispy_field }}
           <label>Укажите дату сдачи</label>
           <input id ="inputDate" type="date" name="date" placeholder="Дата сдачи" class="form-control" value="{{ form.date | date:'d.m.y' }}"><br>
-          {{ file_form.images }}
-          {{ file_form.files }}
+          {{ form.images }}
+          {{ form.files }}
           <br><br>
           <button class="btn btn-lg border-bottom" type="submit"
-          style="background-color: #95D2F1;">Сохранить</button>
+          style="background-color: #95D2F1;">Редактировать</button>
         </form>
       </div>
   </body>
