@@ -2,7 +2,15 @@
 
 {% block content %}
 {% include 'class_nav.html' %}
-<div class="container mt-5">
+<div class="container mt-3">
+    <nav aria-label="breadcrumb">
+			    <ol class="breadcrumb bg-light shadow-sm">
+				    <li class="breadcrumb-item"><a href="{{class.get_absolute_url_feed}}">{{class.name}}</a></li>
+				    <li class="breadcrumb-item"><a href="{{class.get_absolute_url_tasks}}">Задания</a></li>
+                    <li class="breadcrumb-item"><a href="{{task.get_absolute_url}}">{{task.title}}</a></li>
+				    <li class="breadcrumb-item active" aria-current="page">Ответы</li>
+                </ol>
+    		</nav>
     <h1>Ученики, сдавшие работу:</h1>
     <table class="table table-hover mt-5">
           <thead>
@@ -18,12 +26,13 @@
             <tr>
                 <td>{{answer.author.user.last_name}}</td>
                 <td>{{answer.author.user.first_name}}</td>
-                <td>{{answer.mark}}</td>
-                <td>{{answer.teacher_comment}}</td>
+                <td>{{answer.get_mark}}</td>
+                <td><a href="{{answer.get_absolute_url}}">Подробнее</a></td>
             </tr>
             {% endfor %}
           </tbody>
         </table>
+
         </div>
 </div>
 

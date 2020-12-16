@@ -64,10 +64,13 @@ class ClassJoin(forms.Form):
 
 class TaskAdd(forms.ModelForm):
 	title = forms.CharField(
-		label='Введите краткое описание задания',
+		label='Краткое описание',
 		widget=forms.TextInput(attrs={'placeholder': 'Краткое описание'}))
+	body = forms.CharField(
+		label='Домашнее задание',
+		widget=forms.Textarea(attrs={'placeholder': 'Описание'}), required=False)
 	max_mark = forms.IntegerField(
-		label='Введите максимальную оценку',
+		label='Максимальная оценка',
 		widget=forms.NumberInput(attrs={'placeholder': 'Максимальная оценка'}))
 
 	class Meta:
@@ -75,7 +78,7 @@ class TaskAdd(forms.ModelForm):
 		fields = ('title', 'body', 'date', 'max_mark')
 
 
-class TaskAddFiles(forms.Form):
+class FileForm(forms.Form):
 	files = forms.FileField(
 		label='Выберите файл для загрузки',
 		widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
@@ -87,14 +90,21 @@ class TaskAddFiles(forms.Form):
 class StudentAnswerForm(forms.ModelForm):
 	comment = forms.CharField(
 		label='',
-		widget=forms.TextInput(attrs={'placeholder': 'Комментарий к заданию'}), required=False)
-	files = forms.FileField(
-		label='Выберите файл для загрузки',
-		widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
-	images = forms.ImageField(
-		label='Выберите изображение для загрузки',
-		widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
+		widget=forms.Textarea(attrs={'placeholder': 'Комментарий к заданию'}), required=False)
 
 	class Meta:
 		model = StudentAnswer
 		fields = ('comment', )
+
+
+class StudentAnswerMarkForm(forms.ModelForm):
+	mark = forms.IntegerField(
+		label='',
+		widget=forms.NumberInput(attrs={'placeholder': 'Оценка'}))
+	teacher_comment = forms.CharField(
+		label='',
+		widget=forms.Textarea(attrs={'placeholder': 'Комментарий к работе'}), required=False)
+
+	class Meta:
+		model = StudentAnswer
+		fields = ('mark', 'teacher_comment', )

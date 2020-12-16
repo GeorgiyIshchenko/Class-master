@@ -121,7 +121,7 @@ def class_tasks(request, name, pk):
 @login_required
 def class_task_view(request, name, pk, pin):
 	if request.method == "POST":
-		form = StudentAnswerForm(request.POST, request.FILES)
+		form = StudentAnswerForm(request.POST)
 		if form.is_valid():
 			answer = form.save(commit=False)
 			task = get_object_or_404(Task, pk=decode(pin))
@@ -140,7 +140,14 @@ def class_task_view(request, name, pk, pin):
 		task = get_object_or_404(Task, pk=decode(pin))
 		files = Files.objects.filter(task=task, is_student_file=False)
 		images = Images.objects.filter(task=task, is_student_file=False)
-		form = StudentAnswerForm()
+		try:
+			form = StudentAnswerForm(instance=StudentAnswer.objects.get(task=task, author=request.user.profile))
+			file_form = FileForm()
+			answer_exist = True
+		except StudentAnswer.DoesNotExist:
+			form = StudentAnswerForm()
+			file_form = FileForm()
+			answer_exist = False
 		if request.user == current_class.teacher:
 			is_teacher = True
 		else:
@@ -151,6 +158,8 @@ def class_task_view(request, name, pk, pin):
 			'files': files,
 			'images': images,
 			'form': form,
+			'file_form': file_form,
+			'answer_exist': answer_exist,
 			'is_teacher': is_teacher,
 		})
 
@@ -179,7 +188,7 @@ def class_task_add(request, name, pk):
 			return redirect(current_class.get_absolute_url_tasks())
 	else:
 		form = TaskAdd()
-		file_form = TaskAddFiles()
+		file_form = FileForm()
 		return render(request, 'class_task_add.html', {
 			'class': current_class,
 			'form': form,
@@ -200,22 +209,20 @@ def class_task_edit(request, name, pk, pin):
 	task = get_object_or_404(Task, pk=decode(pin))
 	if request.method == 'POST':
 		form = TaskAdd(request.POST, instance=task)
-		print(form.cleaned_data)
 		if form.is_valid():
-			edited_task = form.save(commit=False)
-			edited_task.current_class = get_object_or_404(Class, pk=pk)
-			edited_task.author = task.current_class.teacher
-			edited_task.save()
+			form.save()
 			return redirect(task.get_absolute_url())
-	else:
-		current_class = get_object_or_404(Task, pk=pk)
-		files = Files.objects.filter(task=task)
-		images = Images.objects.filter(task=task)
-		form = TaskAdd(instance=task)
-		return render(request, 'class_task_edit.html', {
-			'class': current_class,
-			'form': form,
-		})
+	current_class = get_object_or_404(Class, pk=pk)
+	files = Files.objects.filter(task=task)
+	images = Images.objects.filter(task=task)
+	form = TaskAdd(instance=task)
+	return render(request, 'class_task_edit.html', {
+		'class': current_class,
+		'form': form,
+		'task': task,
+		'files': files,
+		'images': images,
+	})
 
 
 @login_required
@@ -228,6 +235,30 @@ def class_task_answers(request, name, pk, pin):
 	return render(request, 'class_task_answers.html', {
 		'class': current_class,
 		'answers': answers,
+		'task': task,
+	})
+
+
+@login_required
+def class_task_answer_view(request, name, pk, pin, answer_pk):
+	answer = get_object_or_404(StudentAnswer, pk=answer_pk)
+	if request.method == "POST":
+		form = StudentAnswerMarkForm(request.POST, instance=answer)
+		if form.is_valid():
+			form.save()
+			return redirect(answer.task.get_absolute_url_answers())
+	task = get_object_or_404(Task, pk=decode(pin))
+	current_class = get_object_or_404(Class, pk=pk)
+	files = Files.objects.filter(student_answer=answer, is_student_file=True)
+	images = Images.objects.filter(student_answer=answer, is_student_file=True)
+	form = StudentAnswerMarkForm()
+	return render(request, 'class_task_answer_view.html', {
+		'answer': answer,
+		'task': task,
+		'class': current_class,
+		'files': files,
+		'images': images,
+		'form': form,
 	})
 
 

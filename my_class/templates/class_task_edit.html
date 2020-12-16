@@ -3,25 +3,46 @@
   {% block content%}
   <body>
   {% include 'class_nav.html' %}
-    	<div class="container mt-2 mb-5">
-        <form class="" method="POST" action="" enctype="multipart/form-data">
+    	<div class="container mt-3">
+        <form class="" method="POST" action="" style="padding-right:200px;">
           {% csrf_token %}
           {% load crispy_forms_tags %}
-          <h1 class="h3 mb-3 font-weight-normal">Редактировать задание</h1>
+          <nav aria-label="breadcrumb">
+			  <ol class="breadcrumb bg-light shadow-sm">
+				<li class="breadcrumb-item"><a href="{{class.get_absolute_url_feed}}">{{class.name}}</a></li>
+				<li class="breadcrumb-item"><a href="{{class.get_absolute_url_tasks}}">Задания</a></li>
+                <li class="breadcrumb-item"><a href="{{task.get_absolute_url}}">{{task.title}}</a></li>
+				<li class="breadcrumb-item active" aria-current="page">Редактировать</li>
+			  </ol>
+			</nav>
           {{ form.title | as_crispy_field }}
           {% autoescape off %}
           {{ content.text }}
-          {{ form.body }}
+          {{ form.body | as_crispy_field }}
           {% endautoescape %}
           {{ form.max_mark | as_crispy_field }}
-          <label>Укажите дату сдачи</label>
-          <input id ="inputDate" type="date" name="date" placeholder="Дата сдачи" class="form-control" value="{{ form.date | date:'d.m.y' }}"><br>
-          {{ form.images }}
-          {{ form.files }}
-          <br><br>
+          <label>Дата сдачи:</label>
+          <input type="date" name="date" placeholder="Дата сдачи" class="form-control" value="{{task.get_date}}"><br>
+          {% for i in images %}
+			<div class="d-flex justify-content shadow-sm px-3 mb-3 bg-white rounded">
+				<p><a href="{{i.image.url}}">{{i.get_name}} </a></p>
+                <button type="button" class="btn-close" aria-label="Close"></button>
+			</div>
+			{% endfor %}
+			{% if task.has_files %}
+			<h5 class="mb-3 text-muted">Приложенные файлы:</h5>
+			{% endif %}
+			{% for f in files%}
+			<div class="d-flex justify-content shadow-sm px-3 mb-3 bg-white rounded">
+				<p><a href="{{f.file.url}}">{{f.get_name}}</a></p>
+			</div>
+
+			{% endfor %}
           <button class="btn btn-lg border-bottom" type="submit"
           style="background-color: #95D2F1;">Редактировать</button>
         </form>
+
       </div>
+
   </body>
 {% endblock %}

@@ -2,7 +2,8 @@
 
 {% block content %}
 {% include 'class_nav.html' %}
-<div class="container mt-5 mb-5">
+<div class="container mt-3 mb-5">
+
      <div class="row">
 	    <div class="col-md-4 order-md-2 mb-5">
 	    	<h4 class="d-flex justify-content-between align-items-center mb-3">
@@ -10,12 +11,15 @@
 		    </h4>
 
 			{% if is_teacher %}
-			<a class="btn btn-lg btn-block mb-4 border-bottom" href='{{task.get_absolute_url_edit}}' type="submit"
-	    	style="background-color: #95D2F1;">Редактировать</a>
-			<a class="btn btn-lg btn-block mb-4 border-bottom" href='{{task.get_absolute_url_answers}}' type="submit"
-	    	style="background-color: #CAC6F5;">Ответы учеников</a>
-			<a class="btn btn-lg btn-block mb-4 border-bottom" href='{{task.get_absolute_url_delete}}' type="submit"
-	    	style="background-color: #427BA6;">Удалить задание</a>
+			<div class="btn-group-vertical w-100">
+				<a class="btn btn-lg btn-block border-bottom" href='{{task.get_absolute_url_edit}}' type="submit"
+				style="background-color: #95D2F1;">Редактировать</a>
+				<a class="btn btn-lg btn-block border-bottom" href='{{task.get_absolute_url_answers}}' type="submit"
+				style="background-color: #CAC6F5;">Ответы учеников</a>
+				<a class="btn btn-lg btn-secondary btn-block border-bottom" href='{{task.get_absolute_url_delete}}' type="submit"
+				style="">Удалить задание</a>
+			</div>
+
 			{% else %}
 			<h5 class="mb-3 text-muted">Ваш ответ:</h5>
 			<form class="" method="POST" action="" enctype="multipart/form-data">
@@ -26,19 +30,32 @@
 					  {{ form.comment | as_crispy_field }}
 					</li>
 					<li class="list-group-item">
-					  {{ form.files | as_crispy_field }}
+					  {{ file_form.files | as_crispy_field }}
 					</li>
 					<li class="list-group-item">
-					  {{ form.images | as_crispy_field }}
+					  {{ file_form.images | as_crispy_field }}
 					</li>
 
 					<button class="btn btn-lg border-bottom mt-3" type="submit"
-          			style="background-color: #95D2F1;">Отправить</button>
+          			style="background-color: #95D2F1;">
+						{% if answer_exist %}
+						Редактировать
+						{% else %}
+						Отправить
+						{% endif %}
+					</button>
 		    	</ul>
 			</form>
 			{% endif %}
 	    </div>
 	    <div class="col-md-8 order-md-1">
+			<nav aria-label="breadcrumb">
+			  <ol class="breadcrumb bg-light shadow-sm">
+				<li class="breadcrumb-item"><a href="{{class.get_absolute_url_feed}}">{{class.name}}</a></li>
+				<li class="breadcrumb-item"><a href="{{class.get_absolute_url_tasks}}">Задания</a></li>
+				<li class="breadcrumb-item active" aria-current="page">{{task.title}}</li>
+			  </ol>
+			</nav>
 	        <h4 class="mb-3">{{task.title}}</h4>
             {% if task.not_empty %}
                 <div class="alert alert-light mt-3 py-3" role="alert" style="background-color: #CAC6F5;">
@@ -52,7 +69,9 @@
 				<img src="{{ i.image.url }}" class="img-fluid rounded-lg" alt="Responsive image">
 			</div>
 			{% endfor %}
+			{% if task.has_files %}
 			<h5 class="mb-3 text-muted">Приложенные файлы:</h5>
+			{% endif %}
 			{% for f in files%}
 			<div class="d-flex justify-content-center shadow p-2 mt-3 bg-white rounded">
 				<p><a href="{{f.file.url}}">{{f.get_name}}</a></p>
