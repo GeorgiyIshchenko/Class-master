@@ -73,10 +73,13 @@ class Task(models.Model):
 
 class StudentAnswer(models.Model):
     comment = models.TextField(max_length=256, blank=True, null=True)
+    current_class = models.ForeignKey('Class', on_delete=models.CASCADE, blank=True, null=True)
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     author = models.ForeignKey('Profile', on_delete=models.CASCADE, blank=True, null=True)
     mark = models.IntegerField(blank=True, null=True)
     teacher_comment = models.TextField(max_length=256, blank=True, null=True)
+    mark_time = models.DateTimeField(blank=True, null=True)
+    send_time = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         verbose_name = "Ответы"

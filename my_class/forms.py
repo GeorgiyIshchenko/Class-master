@@ -67,7 +67,7 @@ class TaskAdd(forms.ModelForm):
 		label='Краткое описание',
 		widget=forms.TextInput(attrs={'placeholder': 'Краткое описание'}))
 	body = forms.CharField(
-		label='Домашнее задание',
+		label='Задание',
 		widget=forms.Textarea(attrs={'placeholder': 'Описание'}), required=False)
 	max_mark = forms.IntegerField(
 		label='Максимальная оценка',

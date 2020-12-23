@@ -8,6 +8,7 @@ urlpatterns = [
 	path('accounts/sign_up/', sign_up),
 	path('accounts/sign_in/', sign_in),
 	path('im/', profile),
+	path('im/marks', marks),
 	path('edit/', edit_profile),
 	path('classes/join/', class_join),
 	path('classes/create', class_create),

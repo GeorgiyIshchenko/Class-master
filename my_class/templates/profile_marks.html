@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-3">
+    <h1>Оценки:</h1>
+    <table class="table table-hover mt-5">
+          <thead>
+            <tr>
+                <th scope="col">Предмет</th>
+                <th scope="col">Оценки</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for el in table %}
+            <tr>
+                <td>{{el.class}}</td>
+                <td>
+                    {% for mark in el.marks %}
+                    <span class="badge bg-gray text-danger rounded-pill">{{mark.mark}}</span>
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        </div>
+</div>
+{% endblock %}
