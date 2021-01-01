@@ -17,8 +17,9 @@
             <tr>
                 <th scope="col">Фамилия</th>
                 <th scope="col">Имя</th>
-                <th scope="col">Оценка</th>
+                <th scope="col">Время отправки</th>
                 <th scope="col">Комментарий</th>
+                <th scope="col">Оценка</th>
             </tr>
           </thead>
           <tbody>
@@ -26,8 +27,9 @@
             <tr>
                 <td>{{answer.author.user.last_name}}</td>
                 <td>{{answer.author.user.first_name}}</td>
-                <td>{{answer.get_mark}}</td>
+                <td>{{answer.edit_time | date:'h:i | d.m'}}</td>
                 <td><a href="{{answer.get_absolute_url}}">Подробнее</a></td>
+                <td>{{answer.get_mark}}</td>
             </tr>
             {% endfor %}
           </tbody>

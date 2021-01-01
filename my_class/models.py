@@ -80,6 +80,7 @@ class StudentAnswer(models.Model):
     teacher_comment = models.TextField(max_length=256, blank=True, null=True)
     mark_time = models.DateTimeField(blank=True, null=True)
     send_time = models.DateTimeField(blank=True, null=True)
+    edit_time = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         verbose_name = "Ответы"
@@ -97,6 +98,10 @@ class StudentAnswer(models.Model):
     def get_absolute_url(self):
         return reverse('answer-view', kwargs={'name': self.task.current_class.name, 'pk': self.task.current_class.pk,
                                               'pin': generate_pin(self.task.pk), 'answer_pk': self.pk})
+
+    def get_absolute_url_edit(self):
+        return reverse('answer-edit', kwargs={'name': self.task.current_class.name, 'pk': self.task.current_class.pk,
+                                              'pin': generate_pin(self.task.pk)})
 
     def not_empty(self):
         if self.comment == "":
@@ -127,6 +132,11 @@ class Files(models.Model):
     def __str__(self):
         return self.file.name
 
+    def delete(self, *args, **kwargs):
+        storage, path = self.file.storage, self.file.path
+        super(Files, self).delete(*args, **kwargs)
+        storage.delete(path)
+
 
 class Images(models.Model):
     image = models.ImageField(upload_to=generate_teacher_filename, blank=True, null=True, verbose_name='Изображение')
@@ -144,10 +154,16 @@ class Images(models.Model):
     def __str__(self):
         return self.image.name
 
+    def delete(self, *args, **kwargs):
+        storage, path = self.image.storage, self.image.path
+        super(Images, self).delete(*args, **kwargs)
+        storage.delete(path)
+
 
 class Class(models.Model):
     name = models.CharField(max_length=32)
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    category = models.CharField(max_length=32, blank=True, null=True)
 
     def pin(self):
         return generate_pin(self.pk)

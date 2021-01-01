@@ -29,15 +29,16 @@
                 <button type="button" class="btn-close" aria-label="Close"></button>
 			</div>
 			{% endfor %}
+            <h5 class="mb-3 text-muted">Приложенные файлы:</h5>
 			{% if task.has_files %}
-			<h5 class="mb-3 text-muted">Приложенные файлы:</h5>
 			{% endif %}
 			{% for f in files%}
 			<div class="d-flex justify-content shadow-sm px-3 mb-3 bg-white rounded">
 				<p><a href="{{f.file.url}}">{{f.get_name}}</a></p>
 			</div>
-
 			{% endfor %}
+            {{ file_form.images | as_crispy_field }}
+            {{ file_form.files | as_crispy_field }}
           <button class="btn btn-lg border-bottom" type="submit"
           style="background-color: #95D2F1;">Редактировать</button>
         </form>

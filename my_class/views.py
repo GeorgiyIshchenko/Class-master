@@ -103,11 +103,12 @@ def marks(request):
     table = []
     user_classes = request.user.profile.classes
     for current_class in user_classes.all():
-        table.append({'class':current_class.name, 'marks':StudentAnswer.objects.filter(current_class=current_class).exclude(mark=None)})
+        table.append({'class':current_class.name, 'marks': StudentAnswer.objects.filter(current_class=current_class, author = request.user.profile).exclude(mark=None)})
     print(table)
     return render(request, 'profile_marks.html', {
         'table': table,
     })
+
 
 @login_required
 def class_view(request, name, pk):
@@ -184,6 +185,31 @@ def class_task_view(request, name, pk, pin):
 
 
 @login_required()
+def class_task_answer_edit(request,  name, pk, pin):
+    task = get_object_or_404(Task, pk=decode(pin))
+    if request.method == "POST":
+        form = StudentAnswerForm(request.POST,
+                                 instance=get_object_or_404(StudentAnswer, task=task, author=request.user.profile))
+        if form.is_valid():
+            answer = form.save(commit=False)
+            answer.edit_time = timezone.now()
+            answer.save()
+            existed_files = Files.objects.filter(student_answer=answer, is_student_file=True)
+            for f in existed_files:
+                f.delete()
+            existed_images = Images.objects.filter(student_answer=answer, is_student_file=True)
+            for i in existed_images:
+                i.delete()
+            for f in request.FILES.getlist('files'):
+                f1 = Files(task=task, file=f, student_answer=answer, is_student_file=True)
+                f1.save()
+            for i in request.FILES.getlist('images'):
+                i1 = Images(task=task, image=i, student_answer=answer, is_student_file=True)
+                i1.save()
+            return redirect('/classes/' + name + '-' + str(pk) + '/task=' + str(pin))
+
+
+@login_required()
 def class_task_add(request, name, pk):
     current_class = get_object_or_404(Class, pk=pk)
     if request.method == 'POST':
@@ -230,17 +256,32 @@ def class_task_edit(request, name, pk, pin):
         form = TaskAdd(request.POST, instance=task)
         if form.is_valid():
             form.save()
+            existed_files = Files.objects.filter(task=task, is_student_file=False)
+            for f in existed_files:
+                f.delete()
+            existed_images = Images.objects.filter(task=task, is_student_file=False)
+            for i in existed_images:
+                i.delete()
+            for f in request.FILES.getlist('files'):
+                f1 = Files(task=task, file=f)
+                f1.save()
+            print(request.FILES.getlist('images'))
+            for i in request.FILES.getlist('images'):
+                i1 = Images(task=task, image=i)
+                i1.save()
             return redirect(task.get_absolute_url())
     current_class = get_object_or_404(Class, pk=pk)
     files = Files.objects.filter(task=task)
     images = Images.objects.filter(task=task)
     form = TaskAdd(instance=task)
+    file_form = FileForm()
     return render(request, 'class_task_edit.html', {
         'class': current_class,
         'form': form,
         'task': task,
-        'files': files,
-        'images': images,
+        'file_form': file_form,
+        #'files': files,
+        #'images': images,
     })
 
 

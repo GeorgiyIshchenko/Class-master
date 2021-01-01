@@ -21,6 +21,7 @@ urlpatterns = [
 	path('classes/<str:name>-<int:pk>/task=<int:pin>/edit', class_task_edit, name='task-edit'),
 	path('classes/<str:name>-<int:pk>/task=<int:pin>/delete', class_task_delete, name='task-delete'),
 	path('classes/<str:name>-<int:pk>/task=<int:pin>/answers', class_task_answers, name='task-answers'),
+	path('classes/<str:name>-<int:pk>/task=<int:pin>/answer_edit', class_task_answer_edit, name='answer-edit'),
 	path('classes/<str:name>-<int:pk>/task=<int:pin>/answers/<int:answer_pk>', class_task_answer_view, name='answer-view'),
 	path('classes/<str:name>-<int:pk>/students', class_students, name='students'),
 	path('classes/<str:name>-<int:pk>/leave', class_leave, name='leave'),

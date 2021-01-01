@@ -22,7 +22,13 @@
 
 			{% else %}
 			<h5 class="mb-3 text-muted">Ваш ответ:</h5>
-			<form class="" method="POST" action="" enctype="multipart/form-data">
+			<form class="" method="POST"
+				  {% if answer_exist %}
+				  action="answer_edit"
+				  {% else %}
+				  action=""
+				  {% endif %}
+				  enctype="multipart/form-data">
 				{% csrf_token %}
           		{% load crispy_forms_tags %}
 				<ul class="list-group mb-3">

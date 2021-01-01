@@ -22,6 +22,7 @@
           {{ form.max_mark | as_crispy_field }}
           <label>Дата сдачи:</label>
           <input id ="inputDate" type="date" name="date" placeholder="Дата сдачи" class="form-control" value="{{ form.date | date:'d.m.y' }}"><br>
+            <h5 class="mb-3 text-muted">Приложенные файлы:</h5>
             {{ file_form.images | as_crispy_field }}
             {{ file_form.files | as_crispy_field }}
           <button class="btn btn-lg border-bottom mt-3" type="submit"
