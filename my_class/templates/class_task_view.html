@@ -19,7 +19,10 @@
 				<a class="btn btn-lg btn-secondary btn-block border-bottom" href='{{task.get_absolute_url_delete}}' type="submit"
 				style="">Удалить задание</a>
 			</div>
-
+			{% else %}
+			{% if answer.mark_exist%}
+			<h5 class="mb-3 text-muted">Ура! Оценка поставлена:
+				<span class="badge badge-success badge-pill">{{answer.mark}}/{{task.max_mark}}</span></h5>
 			{% else %}
 			<h5 class="mb-3 text-muted">Ваш ответ:</h5>
 			<form class="" method="POST"
@@ -52,6 +55,7 @@
 					</button>
 		    	</ul>
 			</form>
+			{% endif %}
 			{% endif %}
 	    </div>
 	    <div class="col-md-8 order-md-1">

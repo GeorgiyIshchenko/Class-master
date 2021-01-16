@@ -24,11 +24,15 @@
           </thead>
           <tbody>
             {% for answer in answers %}
-            <tr>
+            <tr
+            {% if answer.mark_exist %}
+            class="bg-success text-white"
+            {% endif %}
+            >
                 <td>{{answer.author.user.last_name}}</td>
                 <td>{{answer.author.user.first_name}}</td>
                 <td>{{answer.edit_time | date:'h:i | d.m'}}</td>
-                <td><a href="{{answer.get_absolute_url}}">Подробнее</a></td>
+                <td><a class="text-dark" href="{{answer.get_absolute_url}}">Подробнее</a></td>
                 <td>{{answer.get_mark}}</td>
             </tr>
             {% endfor %}

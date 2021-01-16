@@ -20,7 +20,16 @@ def decode(pin):
 
 @login_required
 def homepage(request):
-    return render(request, 'homepage.html')
+    user_classes = request.user.profile.classes
+    data = []
+    for el in user_classes.all():
+        class_data = dict()
+        class_data['class'] = el
+        class_data['last_task'] = Task.objects.filter(current_class=el).order_by('-id')[0]
+        data.append(class_data)
+    return render(request, 'homepage.html', {
+        'data': data,
+    })
 
 
 def sign_up(request):
@@ -147,6 +156,7 @@ def class_task_view(request, name, pk, pin):
             answer.current_class = get_object_or_404(Class, pk=pk)
             answer.author = request.user.profile
             answer.send_time = timezone.now()
+            answer.edit_time = timezone.now()
             answer.save()
             for f in request.FILES.getlist('files'):
                 f1 = Files(task=task, file=f, student_answer=answer, is_student_file=True)
@@ -161,10 +171,12 @@ def class_task_view(request, name, pk, pin):
         files = Files.objects.filter(task=task, is_student_file=False)
         images = Images.objects.filter(task=task, is_student_file=False)
         try:
-            form = StudentAnswerForm(instance=StudentAnswer.objects.get(task=task, author=request.user.profile))
+            answer = StudentAnswer.objects.get(task=task, author=request.user.profile)
+            form = StudentAnswerForm(instance=answer)
             file_form = FileForm()
             answer_exist = True
         except StudentAnswer.DoesNotExist:
+            answer = None
             form = StudentAnswerForm()
             file_form = FileForm()
             answer_exist = False
@@ -181,6 +193,7 @@ def class_task_view(request, name, pk, pin):
             'file_form': file_form,
             'answer_exist': answer_exist,
             'is_teacher': is_teacher,
+            'answer': answer,
         })
 
 
@@ -254,6 +267,9 @@ def class_task_edit(request, name, pk, pin):
     task = get_object_or_404(Task, pk=decode(pin))
     if request.method == 'POST':
         form = TaskAdd(request.POST, instance=task)
+        files = request.FILES.getlist('files')
+        images = request.FILES.getlist('images')
+        print(files, images)
         if form.is_valid():
             form.save()
             existed_files = Files.objects.filter(task=task, is_student_file=False)
@@ -262,11 +278,10 @@ def class_task_edit(request, name, pk, pin):
             existed_images = Images.objects.filter(task=task, is_student_file=False)
             for i in existed_images:
                 i.delete()
-            for f in request.FILES.getlist('files'):
+            for f in files:
                 f1 = Files(task=task, file=f)
                 f1.save()
-            print(request.FILES.getlist('images'))
-            for i in request.FILES.getlist('images'):
+            for i in images:
                 i1 = Images(task=task, image=i)
                 i1.save()
             return redirect(task.get_absolute_url())
