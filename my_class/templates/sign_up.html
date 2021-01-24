@@ -13,12 +13,15 @@
   </header>
   <body>
     {% load crispy_forms_tags %}
-    	<div class="container mt-5 py-5" style="width: 25rem;">
+    	<div class="container py-5" style="width: 25rem;">
         {% load crispy_forms_tags %}
         {% block content %}
+          <div class="d-flex justify-content-centerbg-white p-5">
+				<img src="/media/logo.png" class="img-fluid" alt="Responsive image">
+			</div>
         <form class="" method="POST" action="">
           {% csrf_token %}
-          <h1 class="h3 mb-3 font-weight-normal text-center">Регистрация</h1>
+          <h1 class="h4 mb-3 font-weight-normal text-center">Регистрация</h1>
           {{ user_form|crispy }}
           {{ password_form|crispy }}
           {{ profile_form|crispy }}

@@ -20,6 +20,11 @@ def decode(pin):
 
 @login_required
 def homepage(request):
+    return render(request, 'homepage.html', {})
+
+
+@login_required
+def profile_classes(request):
     user_classes = request.user.profile.classes
     data = []
     for el in user_classes.all():
@@ -27,7 +32,7 @@ def homepage(request):
         class_data['class'] = el
         class_data['last_task'] = Task.objects.filter(current_class=el).order_by('-id')[0]
         data.append(class_data)
-    return render(request, 'homepage.html', {
+    return render(request, 'profile_classes.html', {
         'data': data,
     })
 

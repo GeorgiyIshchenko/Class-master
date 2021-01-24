@@ -11,13 +11,13 @@
   <header>
     <div style="background-color: #AFD5EC;">
       <nav class="container navbar navbar-expand-lg navbar-light">
-        <a class="navbar-brand" href="/">Class-master</a>
+        <a class="navbar-brand" href="/" style="color: #24445c;">MasterClass</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div class="navbar-nav">
-            <a class="nav-link" href="/">Главная</a>
+            <a class="nav-link" href="/classes">Ваши классы</a>
             <a class="nav-link" href="/im">{{request.user.first_name}} {{request.user.last_name}}</a>
             <a class="nav-link" href="/im/marks">Оценки</a>
           </div>
@@ -31,7 +31,7 @@
   </body>
   <footer class="footer py-2 mt-auto navbar fixed-bottom" style="background-color: #427BA6;">
       <div class="container">
-        <p class="text-light">Класс</p>
+        <p class="text-light">Связь с разработчиком: <a href="mailto:ishchenko.georgii@lit1533.ru" style="color: blue;">Георгий Ищенко</a></p>
       </div>
   </footer>
 </html>

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="text-center container">
+    <div class="row py-lg-5">
+      <div class="col-lg-6 col-md-8 mx-auto">
+        <img src="/media/logo_book.png" class="img-fluid" alt="Responsive image" height="50" width="50">
+        <h1 class="fw-light" style="color: #24445c;">MasterClass</h1>
+        <p style="color: #24445c;">Система дистанционного обучения</p>
+        <div class="dropdown">
+				  <span class="badge rounded text-white" style="background-color: #427BA6; width: 250px" type="button"
+                        id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <h5>Добавить класс</h5>
+				  </span>
+				  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+				    <a class="dropdown-item" href="/classes/join">Присоединиться к классу</a>
+				    <a class="dropdown-item" href="/classes/create">Создать класс</a>
+				  </div>
+				</div>
+      </div>
+    </div>
+  </section>
+<div class="album py-5 bg-light">
+    <div class="container">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        {% for el in data%}
+        <div class="col">
+          <div class="card shadow-sm">
+            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" role="img">
+              <rect width="100%" height="100%" fill="#95D2F1" ></rect><text font-size="36" textLength="60%" x="20%" y="50%" fill="#828282" dy=".3em">{{el.class.name}}</text></svg>
+
+            <div class="card-body">
+              <span class="badge rounded-pill text-dark" style="background-color: #CAC6F5;">Последнее задание</span>
+              <span class="badge rounded-pill text-dark" style="background-color: #AFD5EC;">Сдать до {{el.last_task.date | date:'d.m.y'}}</span>
+              <a href="{{el.last_task.get_absolute_url}}" class="badge rounded text-white mt-3" style="background-color: #427BA6; height: 30px; width: 100%"><h5>{{el.last_task.title}}</h5></a>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group mt-3">
+                  <a href="{{el.class.get_absolute_url_feed}}" type="button" class="btn btn-sm btn-outline-secondary">Класс</a>
+                  <a href="{{el.last_task.get_absolute_url}}" type="button" class="btn btn-sm btn-outline-secondary">Задание</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

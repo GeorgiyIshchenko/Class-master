@@ -161,7 +161,7 @@ class Images(models.Model):
 
 
 class Class(models.Model):
-    name = models.CharField(max_length=32)
+    name = models.CharField(max_length=128)
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     category = models.CharField(max_length=32, blank=True, null=True)
 
@@ -198,7 +198,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
     city = models.CharField(max_length=16)
     institution = models.CharField(max_length=64, blank=True)
-    grade = models.CharField(max_length=2, blank=True)
+    grade = models.CharField(max_length=2, blank=True, null=True, default=None)
     classes = models.ManyToManyField(Class, verbose_name='Классы', through='ProfileClass')
     last_visit = models.DateTimeField(auto_now_add=True)
 

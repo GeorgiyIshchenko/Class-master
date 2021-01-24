@@ -21,7 +21,8 @@ class ProfileForm(forms.ModelForm):
 		widget=forms.TextInput(attrs={'placeholder': 'Учебное заведение'}))
 	grade = forms.CharField(
 		label='Укажите свой класс (курс)',
-		widget=forms.TextInput(attrs={'placeholder': 'Класс (курс)'}))
+		widget=forms.TextInput(attrs={'placeholder': 'Класс (курс)'},),
+		required=False)
 	city = forms.CharField(
 		label='Укажите свой город',
 		widget=forms.TextInput(attrs={'placeholder': 'Город'}))

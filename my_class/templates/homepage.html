@@ -1,36 +1,55 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="py-5 text-center container">
+<section class="text-center container">
     <div class="row py-lg-5">
       <div class="col-lg-6 col-md-8 mx-auto">
-        <h1 class="fw-light">Class-master</h1>
+        <img src="/media/logo_book.png" class="img-fluid" alt="Responsive image" height="50" width="50">
+        <h1 class="fw-light" style="color: #24445c;">MasterClass</h1>
+          <p style="color: #24445c;">Система дистанционного обучния</p>
+          <a class="badge rounded text-white" style="background-color: #427BA6; width: 250px" type="button"
+          href="classes">
+              <h5>Ваши классы</h5></a>
       </div>
     </div>
-  </section>
-<div class="album py-5 bg-light">
-    <div class="container">
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-        {% for el in data%}
-        <div class="col">
-          <div class="card shadow-sm">
-            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" role="img">
-              <rect width="100%" height="100%" fill="#95D2F1" ></rect><text font-size="36" textLength="60%" x="20%" y="50%" fill="#828282" dy=".3em">{{el.class.name}}</text></svg>
+</section>
+<div class="container marketing mt-5">
+    <div class="row featurette">
+      <div class="col-md-7">
+        <h2 class="featurette-heading" style="color: #24445c;">Растровая и векторная графика: это как? <span class="text-muted">Как-нибудь так…</span></h2>
+        <p class="lead">Есть два вида картинок: в одной миллионы цветов и полный фотореализм; вторую можно увеличивать и уменьшать до бесконечности без потери качества. Вот как это всё работает...
+      </div>
+      <div class="col-md-5 order-md-1">
+        <img src="/media/news/news1.jpeg" class="img-fluid" alt="Responsive image" height="400" width="400">
+      </div>
+    </div>
 
-            <div class="card-body">
-              <span class="badge rounded-pill text-dark" style="background-color: #CAC6F5;">Последнее задание</span>
-              <span class="badge rounded-pill text-dark" style="background-color: #AFD5EC;">Сдать до {{el.last_task.date | date:'d.m.y'}}</span>
-              <a href="{{el.last_task.get_absolute_url}}" class="badge rounded text-white mt-3" style="background-color: #427BA6; height: 30px; width: 100%"><h5>{{el.last_task.title}}</h5></a>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group mt-3">
-                  <a href="{{el.class.get_absolute_url_feed}}" type="button" class="btn btn-sm btn-outline-secondary">Класс</a>
-                  <a href="{{el.last_task.get_absolute_url}}" type="button" class="btn btn-sm btn-outline-secondary">Задание</a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {% endfor %}
+    <hr class="featurette-divider">
+
+    <div class="row featurette">
+      <div class="col-md-7 order-md-2">
+        <h2 class="featurette-heading" style="color: #24445c;">Vim: текстовый редактор для мастеров. <span class="text-muted">Очень сложная штука, но мы попытаемся объяснить просто.</span></h2>
+        <p class="lead">Вы могли слышать программистские анекдоты типа «Не могу выйти из Vim». На «Амазоне» продаётся
+электронная книга о выходе из текстового редактора Vim...
+      </div>
+      <div class="col-md-5 order-md-1">
+        <img src="/media/news/news2.jpeg" class="img-fluid" alt="Responsive image" height="400" width="400">
       </div>
     </div>
+
+    <hr class="featurette-divider">
+
+    <div class="row featurette">
+      <div class="col-md-7">
+        <h2 class="featurette-heading" style="color: #24445c;">Убери руку с мышки! <span class="text-muted">Как работать в три — пять раз быстрее с помощью горячих клавиш.</span></h2>
+        <p class="lead">Факт: работать с кодом, текстом и большинством программ гораздо удобнее и быстрее, когда знаешь горячие клавиши...</div>
+      <div class="col-md-5">
+        <img src="/media/news/news3.jpeg" class="img-fluid" alt="Responsive image" height="400" width="400">
+      </div>
+    </div>
+
+    <hr class="featurette-divider">
+
+    <!-- /END THE FEATURETTES -->
+
   </div>
 {% endblock %}
