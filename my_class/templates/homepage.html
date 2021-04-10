@@ -13,6 +13,9 @@
     </div>
 </section>
 <div class="container marketing mt-5">
+
+
+
     <div class="row featurette">
       <div class="col-md-7">
         <h2 class="featurette-heading" style="color: #24445c;">Растровая и векторная графика: это как? <span class="text-muted">Как-нибудь так…</span></h2>
@@ -53,3 +56,15 @@
 
   </div>
 {% endblock %}
+{% for el in news %}
+    <div class="row featurette">
+      <div class="col-md-7">
+        <h2 class="featurette-heading" style="color: #24445c;">{{el.title}}<span class="text-muted">{{el.second_title}}</span></h2>
+          <p class="lead">{{el.body}}</p>
+      </div>
+      <div class="col-md-5 order-md-1">
+        <img src="" class="img-fluid" alt="Responsive image" height="400" width="400">
+      </div>
+    </div>
+    <hr class="featurette-divider">
+    {% endfor %}

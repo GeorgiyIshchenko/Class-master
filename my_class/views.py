@@ -18,19 +18,29 @@ def decode(pin):
     return int(pin) ^ 612345
 
 
+def start_page(request):
+    return render(request, 'start_page.html')
+
+
 @login_required
 def homepage(request):
-    return render(request, 'homepage.html', {})
+    news = News.objects.all()
+    return render(request, 'homepage.html', {'news':news})
 
 
 @login_required
 def profile_classes(request):
     user_classes = request.user.profile.classes
     data = []
+    print(user_classes.all())
     for el in user_classes.all():
         class_data = dict()
         class_data['class'] = el
-        class_data['last_task'] = Task.objects.filter(current_class=el).order_by('-id')[0]
+        if Task.objects.filter(current_class=el):
+            class_data['has_tasks'] = True
+            class_data['last_task'] = Task.objects.filter(current_class=el).order_by('-id')[0]
+        else:
+            class_data['has_tasks'] = False
         data.append(class_data)
     return render(request, 'profile_classes.html', {
         'data': data,
@@ -76,7 +86,7 @@ def sign_in(request):
             user = auth.authenticate(username=email, password=password)
             if user is not None and user.is_active:
                 auth.login(request, user)
-                return redirect('/')
+                return redirect('/homepage')
     else:
         sign_in_form = SignInForm()
     return render(request, 'sign_in.html', {
@@ -117,7 +127,9 @@ def marks(request):
     table = []
     user_classes = request.user.profile.classes
     for current_class in user_classes.all():
-        table.append({'class':current_class.name, 'marks': StudentAnswer.objects.filter(current_class=current_class, author = request.user.profile).exclude(mark=None)})
+        table.append({'class': current_class.name, 'marks': StudentAnswer.objects.filter(current_class=current_class,
+                                                                                         author=request.user.profile).exclude(
+            mark=None)})
     print(table)
     return render(request, 'profile_marks.html', {
         'table': table,
@@ -127,12 +139,23 @@ def marks(request):
 @login_required
 def class_view(request, name, pk):
     current_class = get_object_or_404(Class, pk=pk)
+    tasks_models = Task.objects.filter(current_class=current_class).order_by('-published_date')
+    data = dict()
+    tasks = []
+    for task in tasks_models:
+        task_content = dict()
+        task_content['task'] = task
+        task_content['files'] = Files.objects.filter(task=task, is_student_file=False)
+        task_content['images'] = Images.objects.filter(task=task, is_student_file=False)
+        tasks.append(task_content)
+    data['tasks'] = tasks
     is_teacher = False
-    if current_class.teacher == request.user:
+    if request.user == current_class.teacher:
         is_teacher = True
     return render(request, 'class_view.html', {
         'class': current_class,
-        'is_teacher': is_teacher,
+        'data': data,
+        'is_teacher': is_teacher
     })
 
 
@@ -148,6 +171,26 @@ def class_tasks(request, name, pk):
         'tasks': tasks,
         'is_teacher': is_teacher
     })
+
+
+@login_required
+def class_settings(request, name, pk):
+    current_class = get_object_or_404(Class, pk=pk)
+    if request.method == 'POST':
+        form = ClassSettings(request.POST, instance=current_class)
+        if form.is_valid():
+            current_class = form.save()
+            return redirect('/classes/' + current_class.name + '-' + str(pk) + '/settings')
+    else:
+        class_settings_form = ClassSettings(instance=current_class)
+        is_teacher = False
+        if current_class.teacher == request.user:
+            is_teacher = True
+        return render(request, 'class_settings.html', {
+            'class': current_class,
+            'is_teacher': is_teacher,
+            'class_settings_form': class_settings_form,
+        })
 
 
 @login_required
@@ -203,7 +246,7 @@ def class_task_view(request, name, pk, pin):
 
 
 @login_required()
-def class_task_answer_edit(request,  name, pk, pin):
+def class_task_answer_edit(request, name, pk, pin):
     task = get_object_or_404(Task, pk=decode(pin))
     if request.method == "POST":
         form = StudentAnswerForm(request.POST,
@@ -300,8 +343,8 @@ def class_task_edit(request, name, pk, pin):
         'form': form,
         'task': task,
         'file_form': file_form,
-        #'files': files,
-        #'images': images,
+        # 'files': files,
+        # 'images': images,
     })
 
 

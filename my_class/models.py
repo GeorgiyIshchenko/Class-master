@@ -161,9 +161,26 @@ class Images(models.Model):
 
 
 class Class(models.Model):
+    IT = 'IT'
+    ALGEBRA = 'AL'
+    BIOLOGY = 'BI'
+    GEOMETRY = 'GM'
+    GEOGRAPHY = 'GG'
+    LINGUISTICS = 'LG'
+    MATH = 'MA'
+    CATEGORIES = [
+        (IT, 'IT'),
+        (ALGEBRA, 'Алгебра'),
+        (BIOLOGY, 'Биология'),
+        (GEOMETRY, 'География'),
+        (GEOGRAPHY, 'Геометрия'),
+        (LINGUISTICS, 'Лингвистика'),
+        (MATH, 'Математика')
+    ]
+
     name = models.CharField(max_length=128)
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
-    category = models.CharField(max_length=32, blank=True, null=True)
+    category = models.CharField(max_length=32, choices=CATEGORIES, blank=True, null=True)
 
     def pin(self):
         return generate_pin(self.pk)
@@ -190,8 +207,28 @@ class Class(models.Model):
     def get_absolute_url_students(self):
         return reverse('students', kwargs={'name': self.name, 'pk': self.pk})
 
+    def get_absolute_url_settings(self):
+        return reverse('settings', kwargs={'name': self.name, 'pk': self.pk})
+
     def get_absolute_url_leave(self):
         return reverse('leave', kwargs={'name': self.name, 'pk': self.pk})
+
+
+class News(models.Model):
+    current_class = models.ForeignKey(Class, on_delete=models.CASCADE, blank=True, null=True)
+    title = models.CharField(max_length=256, blank=True, null=True)
+    second_title = models.CharField(max_length=256, blank=True, null=True)
+    body = models.TextField(blank=True, null=True)
+    href = models.CharField(max_length=256, blank=True, null=True)
+    image = models.ImageField(blank=True, null=True)
+    published_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = "Новости"
+        verbose_name_plural = "Новости"
 
 
 class Profile(models.Model):
@@ -200,6 +237,7 @@ class Profile(models.Model):
     institution = models.CharField(max_length=64, blank=True)
     grade = models.CharField(max_length=2, blank=True, null=True, default=None)
     classes = models.ManyToManyField(Class, verbose_name='Классы', through='ProfileClass')
+    news = models.ManyToManyField(News, verbose_name='Новости')
     last_visit = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -63,6 +63,17 @@ class ClassJoin(forms.Form):
 		widget=forms.TextInput(attrs={'placeholder': 'Код класса'}))
 
 
+class ClassSettings(forms.ModelForm):
+	name = forms.CharField(
+		label='Укажите название класса',
+		widget=forms.TextInput(attrs={'placeholder': 'Класс'}))
+
+
+	class Meta:
+		model = Class
+		fields = ('name', 'category')
+
+
 class TaskAdd(forms.ModelForm):
 	title = forms.CharField(
 		label='Краткое описание',

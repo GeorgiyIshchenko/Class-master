@@ -4,7 +4,8 @@ from django.conf import settings
 from .views import *
 
 urlpatterns = [
-	path('', homepage),
+	path('', start_page),
+	path('homepage', homepage),
 	path('classes', profile_classes),
 	path('accounts/sign_up/', sign_up),
 	path('accounts/sign_in/', sign_in),
@@ -19,6 +20,7 @@ urlpatterns = [
 	path('classes/<str:name>-<int:pk>/tasks', class_tasks, name='tasks'),
 	path('classes/<str:name>-<int:pk>/task=<int:pin>/', class_task_view, name='task-view'),
 	path('classes/<str:name>-<int:pk>/task_add', class_task_add, name='task-add'),
+	path('classes/<str:name>-<int:pk>/settings', class_settings, name='settings'),
 	path('classes/<str:name>-<int:pk>/task=<int:pin>/edit', class_task_edit, name='task-edit'),
 	path('classes/<str:name>-<int:pk>/task=<int:pin>/delete', class_task_delete, name='task-delete'),
 	path('classes/<str:name>-<int:pk>/task=<int:pin>/answers', class_task_answers, name='task-answers'),

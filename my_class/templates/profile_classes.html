@@ -29,15 +29,28 @@
               <rect width="100%" height="100%" fill="#95D2F1" ></rect><text font-size="36" textLength="60%" x="20%" y="50%" fill="#828282" dy=".3em">{{el.class.name}}</text></svg>
 
             <div class="card-body">
+              {% if el.has_tasks%}
               <span class="badge rounded-pill text-dark" style="background-color: #CAC6F5;">Последнее задание</span>
               <span class="badge rounded-pill text-dark" style="background-color: #AFD5EC;">Сдать до {{el.last_task.date | date:'d.m.y'}}</span>
-              <a href="{{el.last_task.get_absolute_url}}" class="badge rounded text-white mt-3" style="background-color: #427BA6; height: 30px; width: 100%"><h5>{{el.last_task.title}}</h5></a>
+              {% endif %}
+              {% if el.has_tasks %}
+              <a href="{{el.last_task.get_absolute_url}}" class="badge rounded text-white mt-3" style="background-color: #427BA6; height: 30px; width: 100%">
+                <h5>{{el.last_task.title}}</h5>
+              </a>
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group mt-3">
                   <a href="{{el.class.get_absolute_url_feed}}" type="button" class="btn btn-sm btn-outline-secondary">Класс</a>
                   <a href="{{el.last_task.get_absolute_url}}" type="button" class="btn btn-sm btn-outline-secondary">Задание</a>
                 </div>
               </div>
+              {% else %}
+              <a href="{{el.class.get_absolute_url_task_add}}" class="badge rounded text-white mt-3" style="background-color: #427BA6; height: 30px; width: 100%">
+                <h5>Новое задание</h5>
+              </a>
+              <div class="d-flex justify-content-between align-items-center">
+                <a href="{{el.class.get_absolute_url_feed}}" type="button" class="btn btn-sm btn-outline-secondary mt-3">Класс</a>
+              </div>
+              {% endif %}
             </div>
           </div>
         </div>

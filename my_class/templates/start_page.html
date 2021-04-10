@@ -1,0 +1,93 @@
+{% load static %}
+
+<!doctype html>
+
+<html>
+  <head>
+    <title>Добро пожаловать!</title>
+  </head>
+  <header>
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  </header>
+  <body style="background-color: #F0F0F0;">
+  <div class="position-relative overflow-hidden p-md-5 text-center bg-white">
+    <div class="col-md-5 p-lg-5 mx-auto my-5">
+      <h1 class="display-4 fw-normal">MasterClass</h1>
+      <p class="lead fw-normal">Новая платформа онлайн-обучения.</p>
+      <a class="btn btn-outline-secondary" href="/accounts/sign_up">Создать аккаунт</a>
+    </div>
+    <div class="product-device shadow-sm d-none d-md-block"></div>
+    <div class="product-device product-device-2 shadow-sm d-none d-md-block"></div>
+  </div>
+
+  <div class="starter-template text-center py-5 px-3 bg-light">
+    <h1>Удобный и приятный интерфейс</h1>
+    <p class="lead"></p>
+  </div>
+
+
+  <div class="container marketing mt-5">
+
+    <div class="row featurette">
+      <div class="col-md-7">
+        <h2 class="featurette-heading" style="color: #24445c;">Простая навигация<span class="text-muted"><br/>Альбом заданий</span></h2>
+        <p class="lead">
+      </div>
+      <div class="col-md-5 order-md-1">
+        <img src="/media/start_page/slide1.png" class="img-fluid shadow-lg" alt="Responsive image" height="400" width="700">
+      </div>
+    </div>
+
+    <hr class="featurette-divider">
+
+
+    <div class="row featurette">
+      <div class="col-md-7 order-md-2">
+        <h2 class="featurette-heading" style="color: #24445c;">Удобная работа с материалом <span class="text-muted"><br/>Задание</span></h2>
+        <p class="lead">
+      </div>
+      <div class="col-md-5 order-md-1">
+        <img src="/media/start_page/slide2.png" class="img-fluid shadow-lg" alt="Responsive image" height="400" width="700">
+      </div>
+    </div>
+
+    <hr class="featurette-divider">
+
+    <div class="row featurette">
+      <div class="col-md-7">
+        <h2 class="featurette-heading" style="color: #24445c;">Учащиеся курса <span class="text-muted"><br/>Посещаемость</span></h2>
+        <p class="lead"></div>
+      <div class="col-md-5">
+        <img src="/media/start_page/slide3.png" class="img-fluid shadow-lg" alt="Responsive image" height="400" width="700">
+      </div>
+    </div>
+
+    <hr class="featurette-divider">
+
+    <div class="row featurette">
+      <div class="col-md-7 order-md-2">
+        <h2 class="featurette-heading" style="color: #24445c;">Оценки получат все <span class="text-muted"><br/>Оценивание</span></h2>
+        <p class="lead">
+      </div>
+      <div class="col-md-5 order-md-1">
+        <img src="/media/start_page/slide4.png" class="img-fluid shadow-lg" alt="Responsive image" height="400" width="700">
+      </div>
+    </div>
+
+    <!-- /END THE FEATURETTES -->
+
+  </div>
+  <div class="position-relative overflow-hidden p-md-5 text-center ">
+    <div class="col-md-5 p-lg-3 mx-auto my-3">
+        <a href="accounts/sign_up" class="btn btn-lg btn-bd-white text-white" style="background-color: #427BA6;">Создать аккаунт</a>
+        <a href="accounts/sign_in" class="btn btn-lg btn-outline-secondary mt-3 mt-sm-0 ms-sm-3" >Войти</a>
+      </div>
+  </div>
+
+  </body>
+  <footer>
+
+  </footer>
+</html>
